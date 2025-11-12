@@ -69,6 +69,13 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    organigrama_person: OrganigramaPerson;
+    official_bulletin: OfficialBulletin;
+    commitment: Commitment;
+    budget: Budget;
+    tenders: Tender;
+    participation: Participation;
+    'public-works': PublicWork;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -77,15 +84,28 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    organigrama_person: OrganigramaPersonSelect<false> | OrganigramaPersonSelect<true>;
+    official_bulletin: OfficialBulletinSelect<false> | OfficialBulletinSelect<true>;
+    commitment: CommitmentSelect<false> | CommitmentSelect<true>;
+    budget: BudgetSelect<false> | BudgetSelect<true>;
+    tenders: TendersSelect<false> | TendersSelect<true>;
+    participation: ParticipationSelect<false> | ParticipationSelect<true>;
+    'public-works': PublicWorksSelect<false> | PublicWorksSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-customization': SiteCustomization;
+    'home-customization': HomeCustomization;
+  };
+  globalsSelect: {
+    'site-customization': SiteCustomizationSelect<false> | SiteCustomizationSelect<true>;
+    'home-customization': HomeCustomizationSelect<false> | HomeCustomizationSelect<true>;
+  };
   locale: null;
   user: User & {
     collection: 'users';
@@ -114,11 +134,32 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Usuarios del sistema (admins, client-admins, editors).
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  firstName?: string | null;
+  lastName?: string | null;
+  /**
+   * Foto de perfil (png/jpg). Máx 2MB.
+   */
+  avatar?: (number | null) | Media;
+  phone?: string | null;
+  /**
+   * Breve descripción / bio del usuario
+   */
+  bio?: string | null;
+  /**
+   * Rol del usuario. Solo un admin puede cambiar este campo.
+   */
+  role?: ('admin' | 'client-admin' | 'editor') | null;
+  /**
+   * Destildar para desactivar la cuenta sin borrarla.
+   */
+  isActive?: boolean | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -142,8 +183,9 @@ export interface User {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
-  alt: string;
+  id: number;
+  caption?: string | null;
+  category?: ('logo' | 'perfil' | 'obra' | 'documento' | 'banner' | 'personalizacion' | 'otros') | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -155,26 +197,371 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+  sizes?: {
+    thumbnail?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+    profile?: {
+      url?: string | null;
+      width?: number | null;
+      height?: number | null;
+      mimeType?: string | null;
+      filesize?: number | null;
+      filename?: string | null;
+    };
+  };
+}
+/**
+ * Funcionarios / organigrama del municipio
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "organigrama_person".
+ */
+export interface OrganigramaPerson {
+  id: number;
+  /**
+   * Nombre completo
+   */
+  fullName: string;
+  summary?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  photo?: (number | null) | Media;
+  cv?: (number | null) | Media;
+  puesto: string;
+  areasSubordinadas?:
+    | {
+        puestoSubordinado: string;
+        nombreResponsable: string;
+        id?: string | null;
+      }[]
+    | null;
+  rol: 'intendente' | 'secretario';
+  isVisible?: boolean | null;
+  startDate?: string | null;
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Boletines Oficiales del municipio
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "official_bulletin".
+ */
+export interface OfficialBulletin {
+  id: number;
+  title: string;
+  pageText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  publishedDate: string;
+  summary?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  file: number | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Compromisos del municipio
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commitment".
+ */
+export interface Commitment {
+  id: number;
+  title: string;
+  pageText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  summary?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  startedDate: string;
+  estimatedCompletionDate: string;
+  status: 'not-started' | 'in-progress' | 'completed';
+  percentageCompleted: number;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Presupuesto del municipio
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "budget".
+ */
+export interface Budget {
+  id: number;
+  title: string;
+  pageText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  publishedDate: string;
+  files?:
+    | {
+        file: number | Media;
+        summary?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Licitaciones del municipio
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenders".
+ */
+export interface Tender {
+  id: number;
+  pageText?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  publishedDate: string;
+  title: string;
+  object: string;
+  officialBudget: string;
+  deadlineRetiroPliego?: string | null;
+  deadlineOfertas?: string | null;
+  openingDate?: string | null;
+  openingTime?: string | null;
+  lugarApertura?: string | null;
+  valorPliego?: string | null;
+  fechaValorPliego?: string | null;
+  lugarEntrega?: string | null;
+  infoAdicional?: string | null;
+  contactEmail?: string | null;
+  attachedFile?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Participación Ciudadana
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "participation".
+ */
+export interface Participation {
+  id: number;
+  title: string;
+  fullName: string;
+  personalId: 'dni' | 'cedula' | 'libreta-civica';
+  idNumber: number;
+  address: string;
+  email: string;
+  phone: string;
+  projectArea: 'educacion' | 'seguridad' | 'salud' | 'transporte' | 'medio-ambiente';
+  summary: string;
+  justification: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "public-works".
+ */
+export interface PublicWork {
+  id: number;
+  title: string;
+  description: string;
+  contractor?: string | null;
+  workType:
+    | 'pavimento'
+    | 'alumbrado'
+    | 'red-de-agua'
+    | 'red-de-cloacas'
+    | 'edificio-publico'
+    | 'parque-jardin'
+    | 'plaza'
+    | 'otro';
+  location?: {
+    latitude?: number | null;
+    longitude?: number | null;
+  };
+  segments?:
+    | {
+        street?: string | null;
+        points?:
+          | {
+              latitude: number;
+              longitude: number;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  photos?: (number | Media)[] | null;
+  /**
+   * Porcentaje de avance actual
+   */
+  progress: number;
+  progressHistory?:
+    | {
+        date: string;
+        progress: number;
+        comment?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'organigrama_person';
+        value: number | OrganigramaPerson;
+      } | null)
+    | ({
+        relationTo: 'official_bulletin';
+        value: number | OfficialBulletin;
+      } | null)
+    | ({
+        relationTo: 'commitment';
+        value: number | Commitment;
+      } | null)
+    | ({
+        relationTo: 'budget';
+        value: number | Budget;
+      } | null)
+    | ({
+        relationTo: 'tenders';
+        value: number | Tender;
+      } | null)
+    | ({
+        relationTo: 'participation';
+        value: number | Participation;
+      } | null)
+    | ({
+        relationTo: 'public-works';
+        value: number | PublicWork;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -184,10 +571,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -207,7 +594,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -218,6 +605,13 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  avatar?: T;
+  phone?: T;
+  bio?: T;
+  role?: T;
+  isActive?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -240,7 +634,8 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
+  caption?: T;
+  category?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -252,6 +647,188 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+  sizes?:
+    | T
+    | {
+        thumbnail?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+        profile?:
+          | T
+          | {
+              url?: T;
+              width?: T;
+              height?: T;
+              mimeType?: T;
+              filesize?: T;
+              filename?: T;
+            };
+      };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "organigrama_person_select".
+ */
+export interface OrganigramaPersonSelect<T extends boolean = true> {
+  fullName?: T;
+  summary?: T;
+  photo?: T;
+  cv?: T;
+  puesto?: T;
+  areasSubordinadas?:
+    | T
+    | {
+        puestoSubordinado?: T;
+        nombreResponsable?: T;
+        id?: T;
+      };
+  rol?: T;
+  isVisible?: T;
+  startDate?: T;
+  contact?:
+    | T
+    | {
+        email?: T;
+        phone?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "official_bulletin_select".
+ */
+export interface OfficialBulletinSelect<T extends boolean = true> {
+  title?: T;
+  pageText?: T;
+  publishedDate?: T;
+  summary?: T;
+  file?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commitment_select".
+ */
+export interface CommitmentSelect<T extends boolean = true> {
+  title?: T;
+  pageText?: T;
+  summary?: T;
+  startedDate?: T;
+  estimatedCompletionDate?: T;
+  status?: T;
+  percentageCompleted?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "budget_select".
+ */
+export interface BudgetSelect<T extends boolean = true> {
+  title?: T;
+  pageText?: T;
+  publishedDate?: T;
+  files?:
+    | T
+    | {
+        file?: T;
+        summary?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenders_select".
+ */
+export interface TendersSelect<T extends boolean = true> {
+  pageText?: T;
+  publishedDate?: T;
+  title?: T;
+  object?: T;
+  officialBudget?: T;
+  deadlineRetiroPliego?: T;
+  deadlineOfertas?: T;
+  openingDate?: T;
+  openingTime?: T;
+  lugarApertura?: T;
+  valorPliego?: T;
+  fechaValorPliego?: T;
+  lugarEntrega?: T;
+  infoAdicional?: T;
+  contactEmail?: T;
+  attachedFile?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "participation_select".
+ */
+export interface ParticipationSelect<T extends boolean = true> {
+  title?: T;
+  fullName?: T;
+  personalId?: T;
+  idNumber?: T;
+  address?: T;
+  email?: T;
+  phone?: T;
+  projectArea?: T;
+  summary?: T;
+  justification?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "public-works_select".
+ */
+export interface PublicWorksSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  contractor?: T;
+  workType?: T;
+  location?:
+    | T
+    | {
+        latitude?: T;
+        longitude?: T;
+      };
+  segments?:
+    | T
+    | {
+        street?: T;
+        points?:
+          | T
+          | {
+              latitude?: T;
+              longitude?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  photos?: T;
+  progress?: T;
+  progressHistory?:
+    | T
+    | {
+        date?: T;
+        progress?: T;
+        comment?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -284,6 +861,147 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Configuración visual del portal.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-customization".
+ */
+export interface SiteCustomization {
+  id: number;
+  /**
+   * Tamaño recomendado: 400 x 400 px. Formatos aceptados: PNG o SVG transparentes.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * Tamaño recomendado: 16 x 16 px o 32 x 32 px, formato .ICO o .PNG.
+   */
+  favicon?: (number | null) | Media;
+  paletaDeColores?: {
+    /**
+     * Se usará para títulos, botones y degradados
+     */
+    primaryColor?: string | null;
+    /**
+     * Se usará para títulos, botones y degradados
+     */
+    secondaryColor?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Editá el contenido principal que se muestra en la página de inicio.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-customization".
+ */
+export interface HomeCustomization {
+  id: number;
+  siteName: string;
+  tagline?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Selecciona las secciones que quieres mostrar en el portal.
+   */
+  enabledSections?:
+    | (
+        | 'organigrama_person'
+        | 'official_bulletin'
+        | 'commitment'
+        | 'budget'
+        | 'tenders'
+        | 'public-works'
+        | 'participation'
+      )[]
+    | null;
+  contact?: {
+    address?: string | null;
+    phone?: string | null;
+    email?: string | null;
+  };
+  socialLinks?:
+    | {
+        network?: string | null;
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-customization_select".
+ */
+export interface SiteCustomizationSelect<T extends boolean = true> {
+  logo?: T;
+  favicon?: T;
+  paletaDeColores?:
+    | T
+    | {
+        primaryColor?: T;
+        secondaryColor?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home-customization_select".
+ */
+export interface HomeCustomizationSelect<T extends boolean = true> {
+  siteName?: T;
+  tagline?: T;
+  description?: T;
+  enabledSections?: T;
+  contact?:
+    | T
+    | {
+        address?: T;
+        phone?: T;
+        email?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        network?: T;
+        url?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

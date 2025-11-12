@@ -1,0 +1,76 @@
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *)); */
+
+@layer utilities {
+  .text-gradient-hero {
+    background-image: linear-gradient(88deg, #4a3aff 5.54%, #51d9ff 97.05%);
+    -webkit-background-clip: text; /* Para compatibilidad con navegadores */
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-gray-custom {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.gravatar-account {
+  display: none !important;
+}
+
+main.collection-edit {
+  background-color: whitesmoke !important;
+}
+
+/*
+.custom-upload-logo-field {
+  display: flex;
+  flex-direction: column-reverse !important;
+  align-items: start;
+  justify-content: center;
+  position: relative;
+}
+
+.custom-upload-logo-field > label {
+  display: none !important;
+}
+
+#field-logo
+  > div.upload__dropzoneAndUpload
+  > div
+  > div
+  > div
+  > button.btn.upload__listToggler.btn--icon-style-without-border.btn--size-small.btn--withoutPopup.btn--style-pill.btn--withoutPopup {
+  display: none !important;
+}
+
+.custom-upload-logo-field::after {
+  content: 'Logo del municipio';
+  display: block;
+  color: black;
+  font-size: 12px;
+  font-weight: 600;
+  position: absolute;
+  padding: 15px !important;
+}
+
+
+#field-logo > div.upload__dropzoneAndUpload > div > div {
+  padding-left: 80px !important;
+}
+
+#field-logo > div.upload__dropzoneAndUpload > div {
+  padding: 20px 50px !important;
+}
+
+#field-logo > div.upload__dropzoneAndUpload > div > div > div > span {
+  display: none !important;
+}
+
+#field-logo > div.upload__dropzoneAndUpload > div > div > p {
+  display: none !important;
+} */

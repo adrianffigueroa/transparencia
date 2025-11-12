@@ -10,7 +10,7 @@ html {
   font-size: 18px;
   line-height: 32px;
 
-  background: rgb(0, 0, 0);
+  /* background: rgb(0, 0, 0); */
   -webkit-font-smoothing: antialiased;
 }
 
@@ -87,6 +87,26 @@ a {
 
 svg {
   vertical-align: middle;
+}
+
+/* Ocultar Gravatar (no usar nunca) */
+img.gravatar-account,
+img[src*='gravatar.com'] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* Forzar que la miniatura subida se muestre y tenga buen layout */
+.upload-relationship-details__thumbnail img,
+.thumbnail img,
+img[src*='/api/media/file/'] {
+  display: inline-block !important;
+  width: 34px !important;
+  height: 34px !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  z-index: 9999 !important;
+  position: relative !important;
 }
 
 .home {
