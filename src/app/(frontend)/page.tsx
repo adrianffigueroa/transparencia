@@ -69,9 +69,9 @@ import {
 } from 'react-icons/fa'
 import { FaListCheck } from 'react-icons/fa6'
 import '@/styles/payloadStyles.css'
-import CardLatest from '../components/CardLatest'
+import CardLatest from '../components/front/CardLatest'
 import HomeSocialLogos from '../components/HomeSocialLogos'
-import Footer from '../components/Footer'
+import Footer from '../components/front/Footer'
 
 // --- Datos de la Grilla de Navegación ---
 // (Por ahora son estáticos, luego los podemos cargar desde Payload si es necesario)

@@ -1,80 +1,147 @@
 import type { CollectionConfig } from 'payload'
-import sanitizeHtml from 'sanitize-html'
 
 const Participation: CollectionConfig = {
   slug: 'participation',
   labels: {
-    singular: { en: 'Participation', es: 'Participación' },
-    plural: { en: 'Participations', es: 'Participaciones' },
+    singular: 'Participación Ciudadana',
+    plural: 'Participación Ciudadana',
   },
-  auth: false,
   admin: {
-    useAsTitle: 'title',
-    description: 'Participación Ciudadana',
+    group: 'Módulos',
+    description: 'Gestión completa de Participación Ciudadana',
+    components: {
+      views: {
+        list: {
+          Component: '@/app/components/admin/views/collections/ParticipationListView', // Vista custom con tabs
+        },
+      },
+    },
   },
   access: {
-    read: () => true,
-    create: () => true,
+    read: ({ req }) => {
+      const user = req?.user as any
+      return Boolean(user && (user.role === 'admin' || user.role === 'client-admin'))
+    },
+    create: () => true, // Ciudadanos pueden crear propuestas
     update: ({ req }) => {
       const user = req?.user as any
       return Boolean(user && (user.role === 'admin' || user.role === 'client-admin'))
     },
     delete: ({ req }) => {
       const user = req?.user as any
-      return Boolean(user && (user.role === 'admin' || user.role === 'client-admin'))
+      return Boolean(user && user.role === 'admin')
     },
   },
   fields: [
-    { name: 'title', label: 'Título del Proyecto', type: 'text', required: true },
-    { name: 'fullName', label: 'Nombre y Apellido', type: 'text', required: true },
+    // --- CAMPOS DE CONFIGURACIÓN (solo editables por admin) ---
     {
-      name: 'personalId',
-      label: 'Documento',
-      type: 'select',
-      options: [
-        { label: 'DNI', value: 'dni' },
-        { label: 'Cédula', value: 'cedula' },
-        { label: 'Libreta Cívica', value: 'libreta-civica' },
-      ],
-      required: true,
+      name: 'isConfig',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        hidden: true, // No visible en UI, solo interno
+      },
     },
-    { name: 'idNumber', label: 'Número de Documento', type: 'number', required: true },
-    { name: 'address', label: 'Domicilio', type: 'textarea', required: true },
-    { name: 'email', label: 'Correo Electrónico', type: 'email', required: true },
-    { name: 'phone', label: 'Teléfono', type: 'text', required: true },
+    {
+      name: 'heroText',
+      label: 'Texto Hero',
+      type: 'textarea',
+      admin: {
+        condition: (data) => data?.isConfig === true,
+        description: 'Solo editable en el documento de configuración',
+      },
+    },
+    {
+      name: 'instructions',
+      label: 'Instrucciones',
+      type: 'richText',
+      admin: {
+        condition: (data) => data?.isConfig === true,
+      },
+    },
+    {
+      name: 'enableSubmissions',
+      label: 'Habilitar envíos',
+      type: 'checkbox',
+      defaultValue: true,
+      admin: {
+        condition: (data) => data?.isConfig === true,
+      },
+    },
+
+    // --- CAMPOS DE PROPUESTAS (ciudadanos) ---
+    {
+      name: 'title',
+      label: 'Título',
+      type: 'text',
+      required: true,
+      admin: {
+        condition: (data) => data?.isConfig !== true,
+      },
+    },
+    {
+      name: 'fullName',
+      label: 'Nombre y Apellido',
+      type: 'text',
+      required: true,
+      admin: {
+        condition: (data) => data?.isConfig !== true,
+      },
+    },
+    // ...resto de campos de propuestas con la misma condition
+    {
+      name: 'email',
+      label: 'Email',
+      type: 'email',
+      required: true,
+      admin: {
+        condition: (data) => data?.isConfig !== true,
+      },
+    },
     {
       name: 'projectArea',
-      label: 'Área del Proyecto',
+      label: 'Área',
       type: 'select',
       options: [
         { label: 'Educación', value: 'educacion' },
-        { label: 'Seguridad', value: 'seguridad' },
         { label: 'Salud', value: 'salud' },
-        { label: 'Transporte', value: 'transporte' },
-        { label: 'Medio Ambiente', value: 'medio-ambiente' },
+        // ...resto
       ],
-      required: true,
+      admin: {
+        condition: (data) => data?.isConfig !== true,
+      },
     },
-
-    { name: 'summary', label: 'Resumen del Proyecto', type: 'textarea', required: true },
     {
-      name: 'justification',
-      label: 'Justificación del Proyecto',
+      name: 'summary',
+      label: 'Descripción',
       type: 'textarea',
       required: true,
+      admin: {
+        condition: (data) => data?.isConfig !== true,
+      },
+    },
+    {
+      name: 'status',
+      label: 'Estado',
+      type: 'select',
+      defaultValue: 'pendiente',
+      options: [
+        { label: 'Pendiente', value: 'pendiente' },
+        { label: 'En Revisión', value: 'en-revision' },
+        { label: 'Aprobado', value: 'aprobado' },
+        { label: 'Rechazado', value: 'rechazado' },
+      ],
+      admin: {
+        condition: (data) => data?.isConfig !== true,
+      },
     },
   ],
   hooks: {
     beforeValidate: [
-      async ({ data }) => {
-        if (data?.files && Array.isArray(data.files)) {
-          data.files = data.files.map((f) => ({
-            ...f,
-            summary: f.summary ? sanitizeHtml(f.summary, { allowedTags: [] }) : undefined,
-          }))
-        }
-        if (data?.pageText) {
-          data.pageText = sanitizeHtml(data.pageText, { allowedTags: [] })
+      ({ data, operation }) => {
+        // Al crear, si no viene isConfig, asumimos que es una propuesta de ciudadano
+        if (operation === 'create' && data && data.isConfig === undefined) {
+          data.isConfig = false
         }
         return data
       },

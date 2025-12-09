@@ -1,3 +1,7 @@
+import { default as default_644d57a60dbbf775be9557935323b04e } from '@/app/components/admin/views/collections/OrganigramaEditViewWrapper'
+import { default as default_7130280e3f4b0e5b3fe073ca7bb8bc94 } from '@/app/components/admin/views/collections/OrganigramaListViewWrapper'
+import { default as default_accbfd01a5ca8db18aa9b474c9e88a1c } from '@/app/components/admin/views/collections/OfficialBulletinEditViewWrapper'
+import { default as default_4d5c91bfb2acd5dc0fa1cf7f78f749c0 } from '@/app/components/admin/views/collections/OfficialBulletinListViewWrapper'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -21,15 +25,20 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { default as default_e63e49fc7b331b6d555698a8f674b053 } from '@/app/components/OrganigramaEditViewWrapper.tsx'
+import { default as default_448d82396d22141af532f64ce61c4d09 } from '@/app/components/admin/views/collections/ParticipationListView'
 import { default as default_8cc4ba37cdf822dbb312eb0d19edde03 } from '@/app/components/MapPreviewWrapper.tsx'
-import { default as default_5894ed7938dede4cf900bf4d7d389e06 } from '@/app/components/CustomUploadField'
-import { default as default_675a4c5b5db24fd5394f3972eb2ba6ae } from '@/app/components/ColorPickerFancy.tsx'
-import { default as default_3d11f6fcb1e631093fd1fbf22ecd7a08 } from '@/app/components/CheckboxGroup'
-import { default as default_caeb0ca0b8fc763764d3d6592f4ab075 } from '@/app/components/CustomNav.tsx'
-import { default as default_8f44cdce4570c5345dd00a9dd1c5b0ba } from '@/app/components/CustomLogo.tsx'
+import { default as default_c05e2720d46237cbbf33ec1bcb7d85d8 } from '@/app/components/admin/views/globals/LookAndFeelCustomView'
+import { default as default_1770dbaedec1a80bb5baa36b5d67cd01 } from '@/app/components/admin/views/globals/HomeCustomView'
+import { default as default_9519d51eecfec0aea0f84dcc3f75cdbb } from '@/app/components/admin/navigation/CustomNav.tsx'
+import { default as default_e33c8a86cbd0e1dd84254e6b3add9986 } from '@/app/components/admin/shared/CustomLogo.tsx'
+import { default as default_45be6c2598e34308fd4ced21c9cf725f } from '@/app/components/admin/shared/AdminTopHeader.tsx'
+import { default as default_5d24b47215333a9e022bb7fe20af5efa } from '@/app/components/admin/navigation/LoginRedirect.tsx'
 
 export const importMap = {
+  "@/app/components/admin/views/collections/OrganigramaEditViewWrapper#default": default_644d57a60dbbf775be9557935323b04e,
+  "@/app/components/admin/views/collections/OrganigramaListViewWrapper#default": default_7130280e3f4b0e5b3fe073ca7bb8bc94,
+  "@/app/components/admin/views/collections/OfficialBulletinEditViewWrapper#default": default_accbfd01a5ca8db18aa9b474c9e88a1c,
+  "@/app/components/admin/views/collections/OfficialBulletinListViewWrapper#default": default_4d5c91bfb2acd5dc0fa1cf7f78f749c0,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -53,11 +62,12 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "@/app/components/OrganigramaEditViewWrapper.tsx#default": default_e63e49fc7b331b6d555698a8f674b053,
+  "@/app/components/admin/views/collections/ParticipationListView#default": default_448d82396d22141af532f64ce61c4d09,
   "@/app/components/MapPreviewWrapper.tsx#default": default_8cc4ba37cdf822dbb312eb0d19edde03,
-  "@/app/components/CustomUploadField#default": default_5894ed7938dede4cf900bf4d7d389e06,
-  "@/app/components/ColorPickerFancy.tsx#default": default_675a4c5b5db24fd5394f3972eb2ba6ae,
-  "@/app/components/CheckboxGroup#default": default_3d11f6fcb1e631093fd1fbf22ecd7a08,
-  "@/app/components/CustomNav.tsx#default": default_caeb0ca0b8fc763764d3d6592f4ab075,
-  "@/app/components/CustomLogo.tsx#default": default_8f44cdce4570c5345dd00a9dd1c5b0ba
+  "@/app/components/admin/views/globals/LookAndFeelCustomView#default": default_c05e2720d46237cbbf33ec1bcb7d85d8,
+  "@/app/components/admin/views/globals/HomeCustomView#default": default_1770dbaedec1a80bb5baa36b5d67cd01,
+  "@/app/components/admin/navigation/CustomNav.tsx#default": default_9519d51eecfec0aea0f84dcc3f75cdbb,
+  "@/app/components/admin/shared/CustomLogo.tsx#default": default_e33c8a86cbd0e1dd84254e6b3add9986,
+  "@/app/components/admin/shared/AdminTopHeader.tsx#default": default_45be6c2598e34308fd4ced21c9cf725f,
+  "@/app/components/admin/navigation/LoginRedirect.tsx#default": default_5d24b47215333a9e022bb7fe20af5efa
 }

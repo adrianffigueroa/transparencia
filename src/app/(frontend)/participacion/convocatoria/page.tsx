@@ -1,6 +1,6 @@
 import React from 'react'
 import BackButton from '@/app/components/BackButton'
-import { ParticipationForm } from '@/app/components/ParticipationForm'
+import { ParticipationForm } from '@/app/components/admin/views/collections/ParticipationForm'
 const page = () => {
   return (
     <div>

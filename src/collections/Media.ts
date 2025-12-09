@@ -96,10 +96,14 @@ const Media: CollectionConfig = {
     adminThumbnail: 'thumbnail', // usar el tamaño 'thumb' para previsualización en admin
   },
   access: {
-    read: ({ req }) => Boolean(req.user && req.user.role === 'admin'),
-    create: ({ req }) => Boolean(req.user && req.user.role === 'admin'),
-    update: ({ req }) => Boolean(req.user && req.user.role === 'admin'),
-    delete: ({ req }) => Boolean(req.user && req.user.role === 'admin'),
+    read: ({ req }) =>
+      Boolean(req.user && (req.user.role === 'admin' || req.user.role === 'client-admin')),
+    create: ({ req }) =>
+      Boolean(req.user && (req.user.role === 'admin' || req.user.role === 'client-admin')),
+    update: ({ req }) =>
+      Boolean(req.user && (req.user.role === 'admin' || req.user.role === 'client-admin')),
+    delete: ({ req }) =>
+      Boolean(req.user && (req.user.role === 'admin' || req.user.role === 'client-admin')),
   },
   fields: [
     {
@@ -108,29 +112,29 @@ const Media: CollectionConfig = {
       type: 'text',
       admin: { placeholder: 'Descripción breve del archivo (opcional)' },
     },
-    {
-      name: 'category',
-      label: 'Categoría',
-      type: 'select',
-      options: [
-        { value: 'logo', label: 'Logo' },
-        { value: 'perfil', label: 'Foto de perfil' },
-        { value: 'obra', label: 'Foto de obra' },
-        { value: 'documento', label: 'Documento' },
-        { value: 'banner', label: 'Banner' },
-        { label: 'Personalización', value: 'personalizacion' },
-        { value: 'otros', label: 'Otros' },
-      ],
-      admin: {
-        isClearable: true,
-        readOnly: true, // EL ADMIN NO PUEDE CAMBIAR ESTE VALOR
-        hidden: true, // OCULTAR ESTE CAMPO EN EL MODAL DE SUBIDA/EDICIÓN
-      },
-    },
+    // {
+    //   name: 'category',
+    //   label: 'Categoría',
+    //   type: 'select',
+    //   options: [
+    //     { value: 'logo', label: 'Logo' },
+    //     { value: 'perfil', label: 'Foto de perfil' },
+    //     { value: 'obra', label: 'Foto de obra' },
+    //     { value: 'documento', label: 'Documento' },
+    //     { value: 'banner', label: 'Banner' },
+    //     { label: 'Personalización', value: 'personalizacion' },
+    //     { value: 'otros', label: 'Otros' },
+    //   ],
+    //   admin: {
+    //     isClearable: true,
+    //     readOnly: true, // EL ADMIN NO PUEDE CAMBIAR ESTE VALOR
+    //     hidden: true, // OCULTAR ESTE CAMPO EN EL MODAL DE SUBIDA/EDICIÓN
+    //   },
+    // },
   ],
-  hooks: {
-    beforeChange: [setCategoryBeforeChange],
-  },
+  // hooks: {
+  //   beforeChange: [setCategoryBeforeChange],
+  // },
 }
 
 export default Media

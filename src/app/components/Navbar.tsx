@@ -1,5 +1,5 @@
 import React from 'react'
-import CustomDrawer from '../components/Drawer'
+import CustomDrawer from './front/Drawer'
 import Link from 'next/link'
 
 const Navbar = () => {

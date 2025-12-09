@@ -1,7 +1,7 @@
 'use client'
 
-import { AdvancedSearch } from '@/app/components/AdvancedSearch'
-import CardBoletin from '@/app/components/CardBoletin'
+import { AdvancedSearch } from '@/app/components/front/AdvancedSearch'
+import CardBoletin from '@/app/components/front/CardBoletin'
 import { SearchInput } from '@/app/components/SearchInput'
 import React from 'react'
 

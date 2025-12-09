@@ -185,7 +185,6 @@ export interface User {
 export interface Media {
   id: number;
   caption?: string | null;
-  category?: ('logo' | 'perfil' | 'obra' | 'documento' | 'banner' | 'personalizacion' | 'otros') | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -217,93 +216,39 @@ export interface Media {
   };
 }
 /**
- * Funcionarios / organigrama del municipio
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "organigrama_person".
  */
 export interface OrganigramaPerson {
   id: number;
-  /**
-   * Nombre completo
-   */
   fullName: string;
-  summary?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  role: string;
+  bio?: string | null;
   photo?: (number | null) | Media;
   cv?: (number | null) | Media;
-  puesto: string;
-  areasSubordinadas?:
+  heroText?: string | null;
+  subordinateAreas?:
     | {
-        puestoSubordinado: string;
-        nombreResponsable: string;
+        areaName?: string | null;
+        responsibleName?: string | null;
         id?: string | null;
       }[]
     | null;
-  rol: 'intendente' | 'secretario';
-  isVisible?: boolean | null;
-  startDate?: string | null;
-  contact?: {
-    email?: string | null;
-    phone?: string | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
 /**
- * Boletines Oficiales del municipio
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "official_bulletin".
  */
 export interface OfficialBulletin {
   id: number;
-  title: string;
-  pageText?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  number: string;
   publishedDate: string;
-  summary?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  type?: ('disposiciones' | 'resoluciones' | 'ordenanzas') | null;
+  heroText?: string | null;
   file: number | Media;
+  isPublished: boolean;
   updatedAt: string;
   createdAt: string;
 }
@@ -316,7 +261,7 @@ export interface OfficialBulletin {
 export interface Commitment {
   id: number;
   title: string;
-  pageText?: {
+  heroText?: {
     root: {
       type: string;
       children: {
@@ -331,7 +276,7 @@ export interface Commitment {
     };
     [k: string]: unknown;
   } | null;
-  summary?: {
+  summary: {
     root: {
       type: string;
       children: {
@@ -345,11 +290,10 @@ export interface Commitment {
       version: number;
     };
     [k: string]: unknown;
-  } | null;
-  startedDate: string;
-  estimatedCompletionDate: string;
-  status: 'not-started' | 'in-progress' | 'completed';
-  percentageCompleted: number;
+  };
+  image?: (number | null) | Media;
+  status?: ('not-started' | 'in-progress' | 'completed') | null;
+  percentageCompleted?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -362,43 +306,10 @@ export interface Commitment {
 export interface Budget {
   id: number;
   title: string;
-  pageText?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  publishedDate: string;
-  files?:
-    | {
-        file: number | Media;
-        summary?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
-        id?: string | null;
-      }[]
-    | null;
+  description: string;
+  heroText?: string | null;
+  year: number;
+  files: number | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -444,23 +355,40 @@ export interface Tender {
   createdAt: string;
 }
 /**
- * Participación Ciudadana
+ * Gestión completa de Participación Ciudadana
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "participation".
  */
 export interface Participation {
   id: number;
-  title: string;
-  fullName: string;
-  personalId: 'dni' | 'cedula' | 'libreta-civica';
-  idNumber: number;
-  address: string;
-  email: string;
-  phone: string;
-  projectArea: 'educacion' | 'seguridad' | 'salud' | 'transporte' | 'medio-ambiente';
-  summary: string;
-  justification: string;
+  isConfig?: boolean | null;
+  /**
+   * Solo editable en el documento de configuración
+   */
+  heroText?: string | null;
+  instructions?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  enableSubmissions?: boolean | null;
+  title?: string | null;
+  fullName?: string | null;
+  email?: string | null;
+  projectArea?: ('educacion' | 'salud') | null;
+  summary?: string | null;
+  status?: ('pendiente' | 'en-revision' | 'aprobado' | 'rechazado') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -635,7 +563,6 @@ export interface UsersSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   caption?: T;
-  category?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -678,25 +605,17 @@ export interface MediaSelect<T extends boolean = true> {
  */
 export interface OrganigramaPersonSelect<T extends boolean = true> {
   fullName?: T;
-  summary?: T;
+  role?: T;
+  bio?: T;
   photo?: T;
   cv?: T;
-  puesto?: T;
-  areasSubordinadas?:
+  heroText?: T;
+  subordinateAreas?:
     | T
     | {
-        puestoSubordinado?: T;
-        nombreResponsable?: T;
+        areaName?: T;
+        responsibleName?: T;
         id?: T;
-      };
-  rol?: T;
-  isVisible?: T;
-  startDate?: T;
-  contact?:
-    | T
-    | {
-        email?: T;
-        phone?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -706,11 +625,12 @@ export interface OrganigramaPersonSelect<T extends boolean = true> {
  * via the `definition` "official_bulletin_select".
  */
 export interface OfficialBulletinSelect<T extends boolean = true> {
-  title?: T;
-  pageText?: T;
+  number?: T;
   publishedDate?: T;
-  summary?: T;
+  type?: T;
+  heroText?: T;
   file?: T;
+  isPublished?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -720,10 +640,9 @@ export interface OfficialBulletinSelect<T extends boolean = true> {
  */
 export interface CommitmentSelect<T extends boolean = true> {
   title?: T;
-  pageText?: T;
+  heroText?: T;
   summary?: T;
-  startedDate?: T;
-  estimatedCompletionDate?: T;
+  image?: T;
   status?: T;
   percentageCompleted?: T;
   updatedAt?: T;
@@ -735,15 +654,10 @@ export interface CommitmentSelect<T extends boolean = true> {
  */
 export interface BudgetSelect<T extends boolean = true> {
   title?: T;
-  pageText?: T;
-  publishedDate?: T;
-  files?:
-    | T
-    | {
-        file?: T;
-        summary?: T;
-        id?: T;
-      };
+  description?: T;
+  heroText?: T;
+  year?: T;
+  files?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -776,16 +690,16 @@ export interface TendersSelect<T extends boolean = true> {
  * via the `definition` "participation_select".
  */
 export interface ParticipationSelect<T extends boolean = true> {
+  isConfig?: T;
+  heroText?: T;
+  instructions?: T;
+  enableSubmissions?: T;
   title?: T;
   fullName?: T;
-  personalId?: T;
-  idNumber?: T;
-  address?: T;
   email?: T;
-  phone?: T;
   projectArea?: T;
   summary?: T;
-  justification?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -863,76 +777,27 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Configuración visual del portal.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-customization".
  */
 export interface SiteCustomization {
   id: number;
-  /**
-   * Tamaño recomendado: 400 x 400 px. Formatos aceptados: PNG o SVG transparentes.
-   */
   logo?: (number | null) | Media;
-  /**
-   * Tamaño recomendado: 16 x 16 px o 32 x 32 px, formato .ICO o .PNG.
-   */
   favicon?: (number | null) | Media;
-  paletaDeColores?: {
-    /**
-     * Se usará para títulos, botones y degradados
-     */
-    primaryColor?: string | null;
-    /**
-     * Se usará para títulos, botones y degradados
-     */
-    secondaryColor?: string | null;
-  };
+  primaryColor?: string | null;
+  secondaryColor?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
- * Editá el contenido principal que se muestra en la página de inicio.
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home-customization".
  */
 export interface HomeCustomization {
   id: number;
   siteName: string;
-  tagline?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  description?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
-  /**
-   * Selecciona las secciones que quieres mostrar en el portal.
-   */
+  slogan?: string | null;
+  description?: string | null;
   enabledSections?:
     | (
         | 'organigrama_person'
@@ -944,18 +809,15 @@ export interface HomeCustomization {
         | 'participation'
       )[]
     | null;
-  contact?: {
-    address?: string | null;
-    phone?: string | null;
-    email?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  contactEmail?: string | null;
+  socialLinks?: {
+    facebook?: string | null;
+    twitter?: string | null;
+    instagram?: string | null;
+    youtube?: string | null;
   };
-  socialLinks?:
-    | {
-        network?: string | null;
-        url?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -966,12 +828,8 @@ export interface HomeCustomization {
 export interface SiteCustomizationSelect<T extends boolean = true> {
   logo?: T;
   favicon?: T;
-  paletaDeColores?:
-    | T
-    | {
-        primaryColor?: T;
-        secondaryColor?: T;
-      };
+  primaryColor?: T;
+  secondaryColor?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -982,22 +840,19 @@ export interface SiteCustomizationSelect<T extends boolean = true> {
  */
 export interface HomeCustomizationSelect<T extends boolean = true> {
   siteName?: T;
-  tagline?: T;
+  slogan?: T;
   description?: T;
   enabledSections?: T;
-  contact?:
-    | T
-    | {
-        address?: T;
-        phone?: T;
-        email?: T;
-      };
+  address?: T;
+  phone?: T;
+  contactEmail?: T;
   socialLinks?:
     | T
     | {
-        network?: T;
-        url?: T;
-        id?: T;
+        facebook?: T;
+        twitter?: T;
+        instagram?: T;
+        youtube?: T;
       };
   updatedAt?: T;
   createdAt?: T;

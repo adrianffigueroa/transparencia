@@ -2,7 +2,7 @@ import React from 'react'
 import BackButton from '@/app/components/BackButton'
 
 import herotransparencia from '@/public/assets/hero_transparencia.jpg'
-import { ParticipationForm } from '@/app/components/ParticipationForm'
+import { ParticipationForm } from '@/app/components/admin/views/collections/ParticipationForm'
 
 const page = () => {
   return (

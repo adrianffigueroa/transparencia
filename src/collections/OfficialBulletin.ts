@@ -10,8 +10,19 @@ const OfficialBulletin: CollectionConfig = {
   },
   auth: false,
   admin: {
-    useAsTitle: 'title',
-    description: 'Boletines Oficiales del municipio',
+    hideAPIURL: true,
+    components: {
+      views: {
+        edit: {
+          default: {
+            Component: '@/app/components/admin/views/collections/OfficialBulletinEditViewWrapper',
+          },
+        },
+        list: {
+          Component: '@/app/components/admin/views/collections/OfficialBulletinListViewWrapper',
+        },
+      },
+    },
   },
   access: {
     read: () => true,
@@ -30,16 +41,12 @@ const OfficialBulletin: CollectionConfig = {
   },
   fields: [
     {
-      name: 'title',
-      label: 'Título',
+      name: 'number',
+      label: 'Número de publicación de Boletín',
       type: 'text',
       required: true,
-    },
-    {
-      name: 'pageText',
-      label: 'Texto de la página',
-      type: 'richText',
-      required: false,
+      unique: true,
+      index: true,
     },
     {
       name: 'publishedDate',
@@ -48,15 +55,34 @@ const OfficialBulletin: CollectionConfig = {
       required: true,
     },
     {
-      name: 'summary',
-      label: 'Resumen',
-      type: 'richText',
+      name: 'type',
+      label: 'Tipos de publicaciones',
+      type: 'select',
+      options: [
+        { label: 'Disposiciones', value: 'disposiciones' },
+        { label: 'Resoluciones', value: 'resoluciones' },
+        { label: 'Ordenanzas', value: 'ordenanzas' },
+      ],
+      required: false,
+    },
+    {
+      name: 'heroText',
+      label: 'Texto destacado',
+      type: 'text',
+      required: false,
     },
     {
       name: 'file',
       label: 'Archivo',
       type: 'upload',
       relationTo: 'media',
+      required: true,
+    },
+    {
+      name: 'isPublished',
+      label: '¿Publicado?',
+      type: 'checkbox',
+      defaultValue: false,
       required: true,
     },
   ],

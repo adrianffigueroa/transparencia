@@ -41,6 +41,7 @@ const Convocatoria: CollectionConfig = {
     { name: 'address', label: 'Domicilio', type: 'textarea', required: true },
     { name: 'email', label: 'Correo Electrónico', type: 'email', required: true },
     { name: 'phone', label: 'Teléfono', type: 'text', required: true },
+    { name: 'heroText', label: 'Texto destacado', type: 'text' },
   ],
   hooks: {
     beforeValidate: [

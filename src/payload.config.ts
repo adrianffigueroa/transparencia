@@ -30,11 +30,15 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+
     components: {
-      Nav: '@/app/components/CustomNav.tsx',
+      afterLogin: ['@/app/components/admin/navigation/LoginRedirect.tsx'],
+      actions: ['@/app/components/admin/shared/AdminTopHeader.tsx'],
+
+      Nav: '@/app/components/admin/navigation/CustomNav.tsx',
       graphics: {
-        Logo: '@/app/components/CustomLogo.tsx',
-        Icon: '@/app/components/CustomLogo.tsx',
+        Logo: '@/app/components/admin/shared/CustomLogo.tsx',
+        Icon: '@/app/components/admin/shared/CustomLogo.tsx',
       },
     },
   },

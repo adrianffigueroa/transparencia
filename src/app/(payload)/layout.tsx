@@ -9,6 +9,7 @@ import React from 'react'
 import { importMap } from './admin/importMap.js'
 import './custom.scss'
 import '@/styles/payloadStyles.css'
+import AdminTopHeader from '@/app/components/admin/shared/AdminTopHeader.jsx'
 
 type Args = {
   children: React.ReactNode
