@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
-import { useField } from '@payloadcms/ui'
+import { useField, useDocumentInfo } from '@payloadcms/ui'
 import { Input } from '@/app/components/ui/input'
 import { CustomUploadField } from '@/app/components/admin/shared/CustomUploadField'
 import {
@@ -13,7 +13,7 @@ import {
 } from '@/app/components/ui/form'
 import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { is } from 'date-fns/locale'
+import { useRouter } from 'next/navigation'
 
 const itemStyles =
   'bg-white rounded-lg p-3 pt-2 space-y-1 border-[0.2px] shadow-md border-[#B2B2B2]'
@@ -32,6 +32,8 @@ type FormValues = z.infer<typeof formSchema>
 const OfficialBulletinEditView = () => {
   const [isSaving, setIsSaving] = React.useState(false)
   const { value: payloadFile, setValue: setPayloadFile } = useField<string>({ path: 'file' })
+  const { id } = useDocumentInfo()
+  const router = useRouter()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -39,19 +41,15 @@ const OfficialBulletinEditView = () => {
       number: '',
       publishedDate: '',
       file: '',
+      isPublished: false,
     },
   })
 
   const onValidSubmit = async (values: FormValues) => {
-    console.log('🔍 Valores al intentar submit:', values)
-    console.log('🔍 Valor de payloadFile:', payloadFile)
-    console.log('🔍 Todos los valores del form:', form.getValues())
     if (!values.file) {
-      console.log('❌ El archivo está vacío, mostrando error')
       form.setError('file', { type: 'manual', message: 'El archivo es obligatorio' })
       return
     }
-    console.log('✅ Validación pasó. Enviando:', values)
     setIsSaving(true)
 
     try {
@@ -60,18 +58,29 @@ const OfficialBulletinEditView = () => {
         number: values.number,
         publishedDate: values.publishedDate,
         file: parseInt(values.file, 10), // ✅ Convertir string a número
+        isPublished: values.isPublished,
       }
 
-      console.log('📤 Payload a enviar:', payload)
-      const res = await fetch('/api/official_bulletin', {
-        method: 'POST',
+      // ✅ Si hay ID, es edición (PATCH), sino es creación (POST)
+      const url = id ? `/api/official_bulletin/${id}` : '/api/official_bulletin'
+      const method = id ? 'PATCH' : 'POST'
+
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       })
 
       if (res.ok) {
-        alert('¡Guardado correctamente!')
-        form.reset(values)
+        alert(id ? '¡Actualizado correctamente!' : '¡Guardado correctamente!')
+        const data = await res.json()
+        form.reset({
+          number: data.doc.number,
+          publishedDate: data.doc.publishedDate,
+          file: String(data.doc.file),
+          isPublished: data.doc.isPublished,
+        })
+        if (method === 'PATCH') router.push('/admin/collections/official_bulletin')
       } else {
         const errorData = await res.json()
 
@@ -101,26 +110,51 @@ const OfficialBulletinEditView = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/official_bulletin?limit=1')
-        const json = await res.json()
-        const doc = json.docs?.[0]
+        // ✅ Si hay ID, cargar ese documento específico
+        if (id) {
+          console.log('🔍 Cargando documento con ID:', id)
+          const res = await fetch(`/api/official_bulletin/${id}`)
+          const data = await res.json()
+          console.log('📦 Respuesta completa del servidor:', data)
 
-        if (doc) {
-          const initialData = {
-            number: doc.number || '',
-            publishedDate: doc.publishedDate || '',
-            file: doc.file || '',
+          const doc = data.doc || data
+          console.log('📄 Documento extraído:', doc)
+
+          if (doc) {
+            // ✅ Manejar diferentes formatos de fecha
+            let formattedDate = ''
+            if (doc.publishedDate) {
+              // Si viene como timestamp o string ISO
+              const dateObj = new Date(doc.publishedDate)
+              // Formato YYYY-MM-DD para input type="date"
+              formattedDate = dateObj.toISOString().split('T')[0]
+            }
+            // ✅ Manejar file que puede ser ID o objeto
+            let fileId = ''
+            if (doc.file) {
+              if (typeof doc.file === 'object' && doc.file.id) {
+                fileId = String(doc.file.id)
+              } else {
+                fileId = String(doc.file)
+              }
+            }
+            const initialData = {
+              number: doc.number || '',
+              publishedDate: formattedDate,
+              file: fileId,
+              isPublished: doc.isPublished || false,
+            }
+            console.log('📥 Datos cargados para edición:', initialData)
+            form.reset(initialData)
+            setPayloadFile(doc.file || null)
           }
-          console.log('📥 Datos cargados desde API:', initialData)
-          form.reset(initialData)
-          setPayloadFile(doc.file || null)
         }
       } catch (error) {
         console.error('Error fetching data:', error)
       }
     }
     fetchData()
-  }, [form, setPayloadFile])
+  }, [id, form, setPayloadFile])
 
   // Sincronizar file de react-hook-form con Payload
   const fileValue = form.watch('file')
@@ -135,9 +169,6 @@ const OfficialBulletinEditView = () => {
         <button
           className="bg-white text-blue-500 px-6 py-2 rounded-xl border border-blue-500 font-medium hover:bg-blue-50 disabled:opacity-50 transition-colors"
           onClick={() => {
-            console.log('🖱️ Click en Guardar')
-            console.log('📋 Estado actual del form:', form.getValues())
-            console.log('❌ Errores actuales:', form.formState.errors)
             form.handleSubmit(onValidSubmit)()
           }}
           type="button"
@@ -209,6 +240,28 @@ const OfficialBulletinEditView = () => {
                 <p className="text-sm text-red-500 mt-1">{form.formState.errors.file.message}</p>
               )}
             </div>
+            <FormField
+              control={form.control}
+              name="isPublished"
+              render={({ field }) => (
+                <FormItem className={`${itemStyles} w-1/6 flex flex-row items-center space-x-3`}>
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      className="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                  </FormControl>
+                  <label className="text-gray-600 font-medium text-sm">Publicado</label>
+                </FormItem>
+              )}
+            />
+
+            {isSaving && <p className="text-sm text-gray-500 mt-2">Guardando boletín oficial...</p>}
           </form>
         </Form>
       </div>

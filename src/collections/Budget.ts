@@ -1,3 +1,4 @@
+import { is } from 'date-fns/locale'
 import type { CollectionConfig } from 'payload'
 import sanitizeHtml from 'sanitize-html'
 
@@ -9,8 +10,19 @@ const Budget: CollectionConfig = {
   },
   auth: false,
   admin: {
-    useAsTitle: 'title',
-    description: 'Presupuesto del municipio',
+    hideAPIURL: true,
+    components: {
+      views: {
+        edit: {
+          default: {
+            Component: '@/app/components/admin/views/collections/BudgetEditViewWrapper',
+          },
+        },
+        list: {
+          Component: '@/app/components/admin/views/collections/BudgetListViewWrapper',
+        },
+      },
+    },
   },
   access: {
     read: () => true,
@@ -58,6 +70,12 @@ const Budget: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       required: true,
+    },
+    {
+      name: 'isPublished',
+      label: '¿Publicado?',
+      type: 'checkbox',
+      defaultValue: false,
     },
   ],
   hooks: {

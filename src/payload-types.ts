@@ -298,8 +298,6 @@ export interface Commitment {
   createdAt: string;
 }
 /**
- * Presupuesto del municipio
- *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "budget".
  */
@@ -310,6 +308,7 @@ export interface Budget {
   heroText?: string | null;
   year: number;
   files: number | Media;
+  isPublished?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -658,6 +657,7 @@ export interface BudgetSelect<T extends boolean = true> {
   heroText?: T;
   year?: T;
   files?: T;
+  isPublished?: T;
   updatedAt?: T;
   createdAt?: T;
 }

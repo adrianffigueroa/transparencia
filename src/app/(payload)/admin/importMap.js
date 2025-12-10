@@ -25,6 +25,8 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
+import { default as default_50f120c890d7f043f1b3276d8306b9b9 } from '@/app/components/admin/views/collections/BudgetEditViewWrapper'
+import { default as default_84baff42823d0d176b223880d6b6cb09 } from '@/app/components/admin/views/collections/BudgetListViewWrapper'
 import { default as default_448d82396d22141af532f64ce61c4d09 } from '@/app/components/admin/views/collections/ParticipationListView'
 import { default as default_8cc4ba37cdf822dbb312eb0d19edde03 } from '@/app/components/MapPreviewWrapper.tsx'
 import { default as default_c05e2720d46237cbbf33ec1bcb7d85d8 } from '@/app/components/admin/views/globals/LookAndFeelCustomView'
@@ -62,6 +64,8 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
+  "@/app/components/admin/views/collections/BudgetEditViewWrapper#default": default_50f120c890d7f043f1b3276d8306b9b9,
+  "@/app/components/admin/views/collections/BudgetListViewWrapper#default": default_84baff42823d0d176b223880d6b6cb09,
   "@/app/components/admin/views/collections/ParticipationListView#default": default_448d82396d22141af532f64ce61c4d09,
   "@/app/components/MapPreviewWrapper.tsx#default": default_8cc4ba37cdf822dbb312eb0d19edde03,
   "@/app/components/admin/views/globals/LookAndFeelCustomView#default": default_c05e2720d46237cbbf33ec1bcb7d85d8,

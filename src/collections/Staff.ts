@@ -37,7 +37,7 @@ const ensureUniqueIntendente: CollectionBeforeChangeHook = async ({
 const Organigrama: CollectionConfig = {
   slug: 'organigrama_person',
   labels: {
-    singular: 'Miembro del Organigrama',
+    singular: 'Organigrama',
     plural: 'Organigrama',
   },
   admin: {
@@ -78,10 +78,10 @@ const Organigrama: CollectionConfig = {
   fields: [
     { name: 'fullName', type: 'text', required: true },
     { name: 'role', type: 'text', required: true }, // Ej: "Intendente" o "Jefe de Gabinete"
-    { name: 'bio', type: 'textarea' },
-    { name: 'photo', type: 'upload', relationTo: 'media' },
-    { name: 'cv', type: 'upload', relationTo: 'media' },
-    { name: 'heroText', label: 'Texto destacado', type: 'text' },
+    { name: 'bio', type: 'textarea', required: false },
+    { name: 'photo', type: 'upload', relationTo: 'media', required: false },
+    { name: 'cv', type: 'upload', relationTo: 'media', required: false },
+    { name: 'heroText', label: 'Texto destacado', type: 'text', required: false },
 
     // --- Array para el Nivel 3 (Áreas) ---
     {
@@ -91,6 +91,7 @@ const Organigrama: CollectionConfig = {
         { name: 'areaName', type: 'text' },
         { name: 'responsibleName', type: 'text' },
       ],
+      required: false,
     },
   ],
 }

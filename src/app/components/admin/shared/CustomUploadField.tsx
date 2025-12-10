@@ -1,3 +1,4 @@
+// ...existing code...
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
@@ -25,14 +26,12 @@ export const CustomUploadField: React.FC<Props> = ({ label, description, value, 
   const [isLoading, setIsLoading] = useState(false)
   const [uploadedFile, setUploadedFile] = useState<MediaDoc | null>(null)
   const lastFetchedId = useRef<string | null>(null)
-  const onChangeRef = useRef(onChange) // ✅ Guardar onChange en ref
+  const onChangeRef = useRef(onChange)
 
-  // ✅ Actualizar la ref cuando onChange cambie
   useEffect(() => {
     onChangeRef.current = onChange
   }, [onChange])
 
-  // --- useEffect: Cargar detalles cuando value cambia ---
   useEffect(() => {
     if (!value) {
       setUploadedFile(null)
@@ -56,13 +55,13 @@ export const CustomUploadField: React.FC<Props> = ({ label, description, value, 
           setUploadedFile(data)
         } else {
           setUploadedFile(null)
-          onChangeRef.current(null) // ✅ Usar ref
+          onChangeRef.current(null)
         }
       })
       .catch((error) => {
         console.error('Error cargando archivo:', error)
         setUploadedFile(null)
-        onChangeRef.current(null) // ✅ Usar ref
+        onChangeRef.current(null)
       })
       .finally(() => setIsLoading(false))
   }, [value, isLoading])
@@ -71,64 +70,71 @@ export const CustomUploadField: React.FC<Props> = ({ label, description, value, 
     const file = acceptedFiles[0]
     if (!file) return
 
-    console.log('📁 Archivo seleccionado:', file.name)
     setIsLoading(true)
     const formData = new FormData()
     formData.append('file', file)
 
     try {
-      console.log('⬆️ Subiendo archivo a /api/media...')
       const res = await fetch('/api/media', {
         method: 'POST',
         body: formData,
       })
 
-      console.log('📡 Respuesta del servidor, status:', res.status)
-
       if (!res.ok) {
         const errorText = await res.text()
-        console.error('❌ Error del servidor:', errorText)
+        console.error('Error del servidor:', errorText)
         throw new Error('Error al subir archivo')
       }
 
       const data = await res.json()
-      console.log('📦 Data recibida:', data)
 
       if (data.doc) {
-        console.log('✅ Archivo subido exitosamente, ID:', data.doc.id)
         setUploadedFile(data.doc)
-        onChangeRef.current(data.doc.id) // ✅ Usar ref en lugar de onChange directamente
-        lastFetchedId.current = data.doc.id
-        console.log('🔄 onChange llamado con ID:', data.doc.id)
+        onChangeRef.current(String(data.doc.id))
+        lastFetchedId.current = String(data.doc.id)
       } else {
-        console.error('⚠️ Respuesta inválida del servidor (falta data.doc):', data)
+        console.error('Respuesta inválida del servidor:', data)
       }
     } catch (e) {
-      console.error('💥 Error al subir archivo:', e)
+      console.error('Error al subir archivo:', e)
     } finally {
       setIsLoading(false)
     }
-  }, []) // ✅ Sin dependencias porque usamos ref
+  }, [])
 
   const onRemove = useCallback((e: React.MouseEvent) => {
     e.stopPropagation()
     setUploadedFile(null)
     lastFetchedId.current = null
-    onChangeRef.current(null) // ✅ Usar ref
-  }, []) // ✅ Sin dependencias
+    onChangeRef.current(null)
+  }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
-    accept: { 'image/*': [], 'application/pdf': [] },
+    accept: {
+      'image/*': [],
+      'application/pdf': [],
+      'application/vnd.ms-excel': [],
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [],
+    },
   })
+
+  // shared grid class to keep columns aligned
+  const gridClass = 'grid grid-cols-[140px_minmax(150px,320px)_auto] gap-4 items-center'
 
   // --- LOADING STATE ---
   if (isLoading) {
     return (
-      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center h-40">
-        <CgSpinner className="animate-spin text-purple-500" size={30} />
-        <span className="ml-3 text-gray-600">Cargando...</span>
+      <div className="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className={gridClass}>
+          <div className="text-gray-800 font-semibold text-base">{label}</div>
+          <div className="flex items-center justify-center h-32">
+            <CgSpinner className="animate-spin text-purple-500" size={30} />
+            <span className="ml-3 text-gray-600">Cargando...</span>
+          </div>
+          <div className="flex flex-col items-end">{/* espacio para botón / descripción */}</div>
+        </div>
       </div>
     )
   }
@@ -137,29 +143,37 @@ export const CustomUploadField: React.FC<Props> = ({ label, description, value, 
   if (uploadedFile) {
     return (
       <div className="p-6 bg-white rounded-lg border border-gray-200">
-        <label className="block text-gray-800 font-semibold text-base mb-4">{label}</label>
-        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-md border border-gray-200">
-          {uploadedFile.url && uploadedFile.mimeType?.includes('image') && (
-            <Image
-              src={uploadedFile.url}
-              alt={uploadedFile.filename}
-              className="w-10 h-10 object-cover rounded"
-              width={40}
-              height={40}
-            />
-          )}
-          <span className="flex-1 text-gray-700 text-sm ml-3 truncate">
-            {uploadedFile.filename}
-          </span>
-          <button
-            type="button"
-            onClick={onRemove}
-            className="text-red-500 hover:text-red-700 font-semibold ml-4 text-sm"
-          >
-            Quitar
-          </button>
+        <div className={gridClass}>
+          <label className="text-gray-800 font-semibold text-base">{label}</label>
+
+          <div className="flex items-center p-3 bg-gray-50 rounded-md border border-gray-200 h-32">
+            {uploadedFile.url && uploadedFile.mimeType?.includes('image') && (
+              <Image
+                src={uploadedFile.url}
+                alt={uploadedFile.filename}
+                className="w-10 h-10 object-cover rounded"
+                width={40}
+                height={40}
+              />
+            )}
+            <span className="flex-1 text-gray-700 text-sm ml-3 truncate">
+              {uploadedFile.filename}
+            </span>
+            <button
+              type="button"
+              onClick={onRemove}
+              className="text-red-500 hover:text-red-700 font-semibold ml-2 text-sm"
+            >
+              Quitar
+            </button>
+          </div>
+
+          <div className="flex flex-col items-end">
+            {description && (
+              <p className="text-sm text-gray-500 text-right max-w-[180px]">{description}</p>
+            )}
+          </div>
         </div>
-        {description && <p className="text-xs text-gray-500 mt-2">{description}</p>}
       </div>
     )
   }
@@ -167,39 +181,33 @@ export const CustomUploadField: React.FC<Props> = ({ label, description, value, 
   // --- DROPZONE ---
   return (
     <div className="p-6 bg-white rounded-lg border border-gray-200">
-      <div className="flex gap-8 items-center">
-        <div className="w-28 flex-shrink-0">
-          <div className="text-gray-800 font-semibold text-base">{label}</div>
+      <div className={gridClass}>
+        <div className="text-gray-800 font-semibold text-base">{label}</div>
+
+        <div
+          {...getRootProps()}
+          className={`flex flex-col items-center justify-center p-6 h-32 w-full border-2 border-dashed rounded-2xl cursor-pointer transition-colors ${
+            isDragActive ? 'bg-violet-50 border-violet-600' : 'bg-transparent border-violet-500'
+          }`}
+        >
+          <input {...getInputProps()} />
+          <Image src={downloadIcon} alt="Icono de carga" width={24} height={24} className="mb-2" />
+          <p className="text-violet-500 text-sm text-center">
+            {isDragActive ? '¡Soltá el archivo!' : 'Arrastrá y soltá o seleccioná un archivo'}
+          </p>
         </div>
-        <div className="flex-1">
-          <div
-            {...getRootProps()}
-            className={`flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-colors ${
-              isDragActive ? 'bg-violet-50 border-violet-600' : 'bg-transparent border-violet-500'
-            }`}
-          >
-            <input {...getInputProps()} />
-            <Image
-              src={downloadIcon}
-              alt="Icono de carga"
-              width={24}
-              height={24}
-              className="mb-2"
-            />
-            <p className="text-violet-500 text-sm text-center">
-              {isDragActive ? '¡Soltá el archivo!' : 'Arrastrá y soltá o seleccioná un archivo'}
-            </p>
-          </div>
-        </div>
-        <div className="flex-shrink-0">
+
+        <div className="flex flex-col items-start gap-2">
           <button
             type="button"
             {...getRootProps()}
-            className="w-20 bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-md py-2 transition-colors"
+            className="w-36 bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-md py-2 transition-colors"
           >
             Subir
           </button>
-          {description && <p className="text-sm text-gray-500 mt-2">{description}</p>}
+          {description && (
+            <p className="text-xs text-gray-500 text-left items-start">{description}</p>
+          )}
         </div>
       </div>
     </div>

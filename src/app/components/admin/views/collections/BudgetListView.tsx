@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import EditTable from '../../shared/EditTable'
 
-const OfficialBulletinListView = () => {
+const BudgetListView = () => {
   const [data, setData] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
@@ -13,24 +13,22 @@ const OfficialBulletinListView = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true)
-        const res = await fetch('/api/official_bulletin')
+        const res = await fetch('/api/budget')
         const json = await res.json()
         console.log('📦 Datos recibidos:', json)
 
         // Transformar los datos para la tabla
         const formattedData =
           json.docs?.map((doc: any) => ({
-            id: doc.id,
-            number: doc.number || '-',
-            publishedDate: doc.publishedDate
-              ? new Date(doc.publishedDate).toLocaleDateString('es-AR', {
+            title: doc.title,
+            publishedDate: doc.createdAt
+              ? new Date(doc.createdAt).toLocaleDateString('es-AR', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
                 })
               : '-',
             isPublished: doc.isPublished ? 'Publicado' : 'No publicado',
-            fileName: doc.file?.filename || '-',
           })) || []
 
         console.log('✅ Datos formateados:', formattedData)
@@ -45,27 +43,26 @@ const OfficialBulletinListView = () => {
   }, [])
 
   const columns = [
-    { key: 'number', label: 'Número de Boletín', width: 'w-[150px]' },
+    { key: 'title', label: 'Título', width: 'w-[150px]' },
     { key: 'publishedDate', label: 'Fecha de Publicación', width: 'w-[180px]' },
     { key: 'isPublished', label: 'Estado', width: 'w-[150px]' },
-    { key: 'fileName', label: 'Archivo', width: 'w-[250px]' },
   ]
 
   const handleEdit = (row: any) => {
     console.log('Editando:', row)
-    router.push(`/admin/collections/official_bulletin/${row.id}`)
+    router.push(`/admin/collections/budget/${row.id}`)
   }
 
   const handleDelete = async (row: any) => {
-    if (!confirm(`¿Estás seguro de eliminar el boletín ${row.number}?`)) return
+    if (!confirm(`¿Estás seguro de eliminar el presupuesto ${row.title}?`)) return
 
     try {
-      const res = await fetch(`/api/official_bulletin/${row.id}`, {
+      const res = await fetch(`/api/budget/${row.id}`, {
         method: 'DELETE',
       })
 
       if (res.ok) {
-        alert('Boletín eliminado correctamente')
+        alert('Presupuesto eliminado correctamente')
         // Recargar datos
         setData((prev) => prev.filter((item) => item.id !== row.id))
       } else {
@@ -81,7 +78,7 @@ const OfficialBulletinListView = () => {
   if (isLoading) {
     return (
       <div className="p-10 bg-white rounded-lg flex items-center justify-center h-64">
-        <p className="text-gray-500">Cargando boletines...</p>
+        <p className="text-gray-500">Cargando presupuestos...</p>
       </div>
     )
   }
@@ -90,14 +87,16 @@ const OfficialBulletinListView = () => {
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h2 className="text-xl font-medium text-black">Boletines Oficiales</h2>
-          <p className="text-black font-normal text-sm">Listado de todos los boletines cargados</p>
+          <h2 className="text-xl font-medium text-black">Presupuestos</h2>
+          <p className="text-black font-normal text-sm">
+            Listado de todos los presupuestos cargados
+          </p>
         </div>
         <button
           className="bg-transparent text-blue-500 border-blue-500 px-6 py-2 rounded-xl font-medium hover:bg-blue-600 hover:text-white hover:cursor-pointer transition-colors"
-          onClick={() => router.push('/admin/collections/official_bulletin/create')}
+          onClick={() => router.push('/admin/collections/budget/create')}
         >
-          Nuevo Boletín
+          Nuevo Presupuesto
         </button>
       </div>
 
@@ -106,4 +105,4 @@ const OfficialBulletinListView = () => {
   )
 }
 
-export default OfficialBulletinListView
+export default BudgetListView

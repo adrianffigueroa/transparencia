@@ -180,11 +180,11 @@ const HomeCustomView = () => {
   if (isLoading) return <div className="p-8">Cargando tu panel personalizado...</div>
 
   return (
-    <div className="p-4 mx-20">
+    <div className="mx-20">
       <div className="flex justify-between items-center mb-8 pb-4">
         <div>
-          <h2 className="text-xl font-medium text-black">Home</h2>
-          <p className="text-black font-normal text-sm">
+          <h2 className="text-2xl font-bold text-black">Home</h2>
+          <p className="text-gray-500 font-normal text-lg">
             Editá el contenido principal que se muestra en la página de inicio.
           </p>
         </div>
@@ -193,7 +193,7 @@ const HomeCustomView = () => {
         <button
           onClick={form.handleSubmit(onValidSubmit, onInvalid)} // <--- ¡ESTO CONECTA EL BOTÓN!
           disabled={isSaving}
-          className="bg-white text-blue-500 px-6 py-2 rounded-xl border border-blue-500 font-medium hover:bg-blue-50 disabled:opacity-50 transition-colors"
+          className="bg-white text-blue-500 px-6 py-2 rounded-xl border border-blue-500 font-medium hover:bg-blue-600 disabled:opacity-50 transition-colors"
         >
           {isSaving ? 'Guardando...' : 'Guardar'}
         </button>
